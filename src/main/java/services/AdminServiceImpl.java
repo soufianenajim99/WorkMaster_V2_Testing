@@ -22,7 +22,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public Admin save(Admin admin) {
-        // Additional validation logic
+
         return adminRepository.save(admin);
     }
 
