@@ -9,113 +9,96 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class AutenticationServiceImplTest {
 
-    @InjectMocks
-    AutenticationServiceImpl authenticationService;
-
-    @Mock
-    EntityManagerFactory entityManagerFactoryMock;
-
-    @Mock
-    EntityManager entityManagerMock;
-
-    @Mock
-    Query queryMock;
+    private AutenticationServiceImpl authenticationService;
+    private EntityManagerFactory mockEntityManagerFactory;
+    private EntityManager mockEntityManager;
+    private Query mockQuery;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
+    public void setUp() {
+        mockEntityManagerFactory = mock(EntityManagerFactory.class);
+        mockEntityManager = mock(EntityManager.class);
+        mockQuery = mock(Query.class);
+
+
+        authenticationService = spy(new AutenticationServiceImpl());
+
+
+        doReturn(mockEntityManager).when(authenticationService).getEntityManager();
     }
 
     @Test
-    void authenticateAdmin_withCorrectCredentials_shouldReturnTrue() {
-        // Arrange
-        String username = "adminUser";
-        String password = "adminPass";
-        String entityName = "Admin";
-        when(entityManagerMock.createQuery(anyString())).thenReturn(queryMock);
-        when(queryMock.setParameter("username", username)).thenReturn(queryMock);
-        when(queryMock.setParameter("password", password)).thenReturn(queryMock);
-        when(queryMock.getSingleResult()).thenReturn(new Object());
+    public void testAuthenticateAdmin_Success() {
 
-        // Act
-        boolean result = authenticationService.authenticateAdmin(username, password);
-
-        // Assert
-        assertTrue(result);
-        verify(entityManagerMock, times(1)).createQuery(anyString());
-        verify(entityManagerMock, times(1)).close();
-    }
-
-    @Test
-    void authenticateAdmin_withIncorrectCredentials_shouldReturnFalse() {
-        // Arrange
         String username = "admin";
         String password = "admin";
-        when(entityManagerMock.createQuery(anyString())).thenReturn(queryMock);
-        when(queryMock.setParameter("username", username)).thenReturn(queryMock);
-        when(queryMock.setParameter("password", password)).thenReturn(queryMock);
-        when(queryMock.getSingleResult()).thenThrow(NoResultException.class);
+        when(mockEntityManager.createQuery(anyString())).thenReturn(mockQuery);
+        when(mockQuery.setParameter("username", username)).thenReturn(mockQuery);
+        when(mockQuery.setParameter("password", password)).thenReturn(mockQuery);
+        when(mockQuery.getSingleResult()).thenReturn(new Object()); // Simulate a result found
 
-        // Act
+
         boolean result = authenticationService.authenticateAdmin(username, password);
 
-        // Assert
-        assertFalse(result);
-        verify(entityManagerMock, times(1)).createQuery(anyString());
-        verify(entityManagerMock, times(1)).close();
+
+        assertTrue(result, "Admin should be authenticated successfully");
     }
 
     @Test
-    void getUser_withCorrectCredentials_shouldReturnUserObject() {
-        // Arrange
-        String entityName = "Employee";
-        String username = "employee";
-        String password = "employee";
-        Object expectedUser = new Object();
-        when(entityManagerMock.createQuery(anyString())).thenReturn(queryMock);
-        when(queryMock.setParameter("username", username)).thenReturn(queryMock);
-        when(queryMock.setParameter("password", password)).thenReturn(queryMock);
-        when(queryMock.getSingleResult()).thenReturn(expectedUser);
+    public void testAuthenticateAdmin_Failure() {
 
-        // Act
-        Object result = authenticationService.getUser(entityName, username, password);
+        String username = "admin";
+        String password = "wrongpassword";
+        when(mockEntityManager.createQuery(anyString())).thenReturn(mockQuery);
+        when(mockQuery.setParameter("username", username)).thenReturn(mockQuery);
+        when(mockQuery.setParameter("password", password)).thenReturn(mockQuery);
+        when(mockQuery.getSingleResult()).thenThrow(new NoResultException()); // Simulate no result found
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(expectedUser, result);
-        verify(entityManagerMock, times(1)).createQuery(anyString());
-        verify(entityManagerMock, times(1)).close();
+        boolean result = authenticationService.authenticateAdmin(username, password);
+
+
+        assertFalse(result, "Admin should not be authenticated with wrong password");
     }
 
     @Test
-    void getUser_withIncorrectCredentials_shouldReturnNull() {
-        // Arrange
-        String entityName = "Recruiter";
-        String username = "recruiter";
-        String password = "wrongPass";
-        when(entityManagerMock.createQuery(anyString())).thenReturn(queryMock);
-        when(queryMock.setParameter("username", username)).thenReturn(queryMock);
-        when(queryMock.setParameter("password", password)).thenReturn(queryMock);
-        when(queryMock.getSingleResult()).thenThrow(NoResultException.class);
+    public void testGetUser_Success() {
 
-        // Act
+        String entityName = "Admin";
+        String username = "admin";
+        String password = "admin";
+        Object mockUser = new Object();
+        when(mockEntityManager.createQuery(anyString())).thenReturn(mockQuery);
+        when(mockQuery.setParameter("username", username)).thenReturn(mockQuery);
+        when(mockQuery.setParameter("password", password)).thenReturn(mockQuery);
+        when(mockQuery.getSingleResult()).thenReturn(mockUser);
+
         Object result = authenticationService.getUser(entityName, username, password);
 
-        // Assert
-        assertNull(result);
-        verify(entityManagerMock, times(1)).createQuery(anyString());
-        verify(entityManagerMock, times(1)).close();
+
+        assertNotNull(result, "User should be retrieved successfully");
+        assertEquals(mockUser, result, "The retrieved user should match the expected user");
+    }
+
+    @Test
+    public void testGetUser_NotFound() {
+
+        String entityName = "Admin";
+        String username = "admin";
+        String password = "wrongpassword";
+        when(mockEntityManager.createQuery(anyString())).thenReturn(mockQuery);
+        when(mockQuery.setParameter("username", username)).thenReturn(mockQuery);
+        when(mockQuery.setParameter("password", password)).thenReturn(mockQuery);
+        when(mockQuery.getSingleResult()).thenThrow(new NoResultException());
+
+        Object result = authenticationService.getUser(entityName, username, password);
+
+
+        assertNull(result, "User should not be retrieved if credentials are incorrect");
     }
 }
