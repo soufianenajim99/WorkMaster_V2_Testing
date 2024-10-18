@@ -24,10 +24,12 @@ public class Leave {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status;
+    private Status status = Status.IN_PROGRESS;
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+
+
 
     public Employee getEmployee() {
         return employee;
