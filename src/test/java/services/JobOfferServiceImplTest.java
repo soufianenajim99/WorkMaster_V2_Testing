@@ -32,29 +32,24 @@ class JobOfferServiceImplTest {
 
     @Test
     void testSavingJobOffer_usingMock() {
-        // Arrange
         JobOffer jobOffer = new JobOffer();
         when(jobOfferRepositoryMock.save(jobOffer)).thenReturn(jobOffer);
 
-        // Act
         JobOffer result = jobOfferService.save(jobOffer);
 
-        // Assert
         assertEquals(jobOffer, result);
         verify(jobOfferRepositoryMock, times(1)).save(jobOffer);
     }
 
     @Test
     void findById() {
-        // Arrange
+
         UUID id = UUID.randomUUID();
         JobOffer jobOffer = new JobOffer();
         when(jobOfferRepositoryMock.findById(id)).thenReturn(Optional.of(jobOffer));
 
-        // Act
         Optional<JobOffer> result = jobOfferService.findById(id);
 
-        // Assert
         assertTrue(result.isPresent());
         assertEquals(jobOffer, result.get());
         verify(jobOfferRepositoryMock, times(1)).findById(id);
@@ -62,16 +57,13 @@ class JobOfferServiceImplTest {
 
     @Test
     void findAll() {
-        // Arrange
+
         JobOffer jobOffer1 = new JobOffer();
         JobOffer jobOffer2 = new JobOffer();
         List<JobOffer> jobOfferList = Arrays.asList(jobOffer1, jobOffer2);
         when(jobOfferRepositoryMock.findAll()).thenReturn(jobOfferList);
-
-        // Act
         List<JobOffer> result = jobOfferService.findAll();
 
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(jobOffer1));
         assertTrue(result.contains(jobOffer2));
@@ -80,27 +72,21 @@ class JobOfferServiceImplTest {
 
     @Test
     void update() {
-        // Arrange
+
         JobOffer jobOffer = new JobOffer();
         when(jobOfferRepositoryMock.update(jobOffer)).thenReturn(jobOffer);
-
-        // Act
         JobOffer result = jobOfferService.update(jobOffer);
 
-        // Assert
         assertEquals(jobOffer, result);
         verify(jobOfferRepositoryMock, times(1)).update(jobOffer);
     }
 
     @Test
     void deleteById() {
-        // Arrange
-        UUID id = UUID.randomUUID();
 
-        // Act
+        UUID id = UUID.randomUUID();
         jobOfferService.deleteById(id);
 
-        // Assert
         verify(jobOfferRepositoryMock, times(1)).deleteById(id);
     }
 }

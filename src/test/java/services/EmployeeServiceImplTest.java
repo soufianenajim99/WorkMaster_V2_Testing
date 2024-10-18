@@ -42,15 +42,12 @@ class EmployeeServiceImplTest {
 
     @Test
     void findById() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Employee employee = new Employee();
         when(employeeRepositoryMock.findById(id)).thenReturn(Optional.of(employee));
 
-        // Act
         Optional<Employee> result = employeeService.findById(id);
 
-        // Assert
         assertTrue(result.isPresent());
         assertEquals(employee, result.get());
         verify(employeeRepositoryMock, times(1)).findById(id);
@@ -58,16 +55,13 @@ class EmployeeServiceImplTest {
 
     @Test
     void findAll() {
-        // Arrange
         Employee employee1 = new Employee();
         Employee employee2 = new Employee();
         List<Employee> employeeList = Arrays.asList(employee1, employee2);
         when(employeeRepositoryMock.findAll()).thenReturn(employeeList);
 
-        // Act
         List<Employee> result = employeeService.findAll();
 
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(employee1));
         assertTrue(result.contains(employee2));
@@ -76,27 +70,21 @@ class EmployeeServiceImplTest {
 
     @Test
     void update() {
-        // Arrange
         Employee employee = new Employee();
         when(employeeRepositoryMock.update(employee)).thenReturn(employee);
 
-        // Act
         Employee result = employeeService.update(employee);
 
-        // Assert
         assertEquals(employee, result);
         verify(employeeRepositoryMock, times(1)).update(employee);
     }
 
     @Test
     void deleteById() {
-        // Arrange
         UUID id = UUID.randomUUID();
 
-        // Act
         employeeService.deleteById(id);
 
-        // Assert
         verify(employeeRepositoryMock, times(1)).deleteById(id);
     }
 }
