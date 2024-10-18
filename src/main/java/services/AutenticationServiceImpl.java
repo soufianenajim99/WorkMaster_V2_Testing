@@ -9,7 +9,7 @@ import services.serviceinterfaces.AuthenticationService;
 public class AutenticationServiceImpl implements AuthenticationService {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
 
-    private EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return entityManagerFactory.createEntityManager();
     }
 
