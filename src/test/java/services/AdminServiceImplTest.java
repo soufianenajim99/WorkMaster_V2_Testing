@@ -35,7 +35,6 @@ class AdminServiceImplTest {
 
     @Test
     void testSavingAdmin_usingMock() {
-        // Arrange
         Admin admin = new Admin();
         when(adminRepositoryMock.save(admin)).thenReturn(admin);
 
@@ -47,15 +46,12 @@ class AdminServiceImplTest {
 
     @Test
     void findById() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Admin admin = new Admin();
         when(adminRepositoryMock.findById(id)).thenReturn(Optional.of(admin));
 
-        // Act
         Optional<Admin> result = adminService.findById(id);
 
-        // Assert
         assertTrue(result.isPresent());
         assertEquals(admin, result.get());
         verify(adminRepositoryMock, times(1)).findById(id);
@@ -63,16 +59,13 @@ class AdminServiceImplTest {
 
     @Test
     void findAll() {
-        // Arrange
         Admin admin1 = new Admin();
         Admin admin2 = new Admin();
         List<Admin> adminList = Arrays.asList(admin1, admin2);
         when(adminRepositoryMock.findAll()).thenReturn(adminList);
 
-        // Act
         List<Admin> result = adminService.findAll();
 
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(admin1));
         assertTrue(result.contains(admin2));
@@ -81,27 +74,21 @@ class AdminServiceImplTest {
 
     @Test
     void update() {
-        // Arrange
         Admin admin = new Admin();
         when(adminRepositoryMock.update(admin)).thenReturn(admin);
 
-        // Act
         Admin result = adminService.update(admin);
 
-        // Assert
         assertEquals(admin, result);
         verify(adminRepositoryMock, times(1)).update(admin);
     }
 
     @Test
     void deleteById() {
-        // Arrange
         UUID id = UUID.randomUUID();
 
-        // Act
         adminService.deleteById(id);
 
-        // Assert
         verify(adminRepositoryMock, times(1)).deleteById(id);
     }
 }
